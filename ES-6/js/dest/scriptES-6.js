@@ -42,7 +42,7 @@ var modalTitle = document.querySelector('.modal-title');
 var modalText = document.querySelector('.modal-text');
 
 function test() {
-    for (var _i = 0; _i < 9; _i++) {
+    for (var _i = 0; _i < (QA.length) * (question.answers.length); _i++) {
         if (checkbox[_i].checked) {
             yourAns.push(+checkbox[_i].value);
         }
