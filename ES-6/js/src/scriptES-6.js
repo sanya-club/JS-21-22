@@ -1,70 +1,83 @@
 let createTestString = JSON.stringify(createTest);
-
 localStorage.setItem('createTest', createTestString);
-
 let createTest = JSON.parse(localStorage.getItem('createTest'));
+console.log(createTest);
+let {
+    title, subtitle, QA
+} = createTest;
+let container = document.createElement('div');
+container.classList.add('container');
+let body = document.querySelector('body');
+body.appendChild(container);
+container.innerHTML = `<h1>${title}</h1>
+<h4>${subtitle}</h4>
+<form name="quiz">
+  <ol>
+  </ol>
+</form>`;
+for (let q = 0; q < QA.length; ++q) {
+    let question = QA[q];
+    let idx = 1 + q;
+    let list = document.createElement('li');
+    document.querySelector('ol').appendChild(list);
+    let qestion = document.createElement('h3');
+    qestion.innerHTML = `${question.question}`;
+    let parent = document.querySelectorAll('li');
+    parent[q].appendChild(qestion);
+    for (let j = 0; j < question.answers.length; j++) {
+        let answer = document.createElement('p');
+        answer.innerHTML = `<label><input type = "checkbox" name = "q${idx}" value="${j}" ><span>${question.answers[j]}</span></label>`;
+        document.querySelectorAll('li')[q].appendChild(answer);
+    }
+}
+let submit = document.createElement('input');
+submit.classList.add('btn');
+submit.setAttribute('type', 'submit');
+submit.setAttribute('value', 'Проверить мои результаты');
+document.querySelector('form').appendChild(submit);
+let yourAns = [];
+let rightAns = [];
+for (let i = 0; i < QA.length; i++) {
+    rightAns.push(QA[i].correctAnswer);
+};
+let modalTitle = document.querySelector('.modal-title');
+let modalText = document.querySelector('.modal-text');
 
-let results = document.querySelector('.test-wrap');
-
-results.innerHTML = tmpl("test", createTest);
-
-
-
-$(function () {
-
-
-
-
-  let $submitButton = $('#submit');
-  let $modal = $('#modal');
-  let $close = $('#close');
-  let $checkbox = $('input:checked');
-
-  $modal.hide(); /*скрываем модальное окно*/
-
-  $submitButton.each(function () {
-    $(this).on('click', function () {
-      $modal.fadeIn(300); /*при клике показываем модальное окно*/
-      let $checked = []; /*создаем массив в кот. потом запишем выбраные ответы*/
-
-      $('input:checked').each(function () {
-
-        let $ans = $(this).next().text(); /*ищем в активных чекбоксах следующий элемент а в нем выбираем текст */
-        let $str = $.trim($ans) /*убираем все побелы в массиве*/
-        $checked.push($str); /*добавляем в массив наши ответы*/
-      });
-
-      let $myAnswers = $checked.join(','); /*преобразуем массив в строку*/
-      console.log('$myAnswers=', $myAnswers.length);
-
-
-      if ($myAnswers == corectAnswers) {
-        $('.modal-title').text('Поздравляем!');
-        $('.modal-body p').text('Вы прошли этот тест!');
-      } else if ($myAnswers.length == 0) {
-        $('.modal-title').text('Упс!');
-        $('.modal-body p').text('Вы не выбрали ответы!');
-        $modal.css({
-          'backgroundColor': 'rgba(73, 99, 115, .8)'
-        });
-      } else {
-        $('.modal-title').text('Увы :(');
-        $('.modal-body p').text('Вы не прошли этот тест! Попробуйте еще раз');
-        $modal.css({
-          'backgroundColor': 'rgba(179, 0, 0, .8)'
-        });
-      }
-    });
-  });
-
-  $close.each(function () {
-    $(this).on('click', function () {
-      $modal.fadeOut(300);
-      $("input:checked").attr('checked', false);
-      window.localStorage.clear();
-      location.reload();
-      return false;
-    });
-  });
-
-});
+function test() {
+    for (let i = 0; i < 9; i++) {
+        if (checkbox[i].checked) {
+            yourAns.push(+checkbox[i].value);
+        }
+    }
+    let yourAnswer = yourAns.join(',');
+    let rightAnswer = rightAns.join(',');
+    //    console.log(yourAnswer);
+    //    console.log(rightAnswer);
+    if (yourAns.length < QA.length) {
+        modalTitle.innerHTML = 'Упс!';
+        modalText.innerHTML = 'Вы не выбрали ответы!';
+        modal.style.background = 'rgba(73, 99, 115, .8)';
+    }
+    else if (yourAnswer !== rightAnswer) {
+        modalTitle.innerHTML = 'Увы :(';
+        modalText.innerHTML = 'Вы не прошли этот тест';
+        modal.style.background = 'rgba(179, 0, 0, .8)';
+    }
+    else {
+        modalTitle.innerHTML = 'Ура!';
+        modalText.innerHTML = 'Вы прошли этот тест!';
+    }
+}
+let modal = document.getElementById('modal');
+let close = document.getElementById('close');
+let checkbox = document.querySelectorAll('input[type="checkbox"]');
+modal.style.display = 'none';
+submit.onclick = function (e) {
+    e.preventDefault();
+    modal.style.display = 'block';
+    test();
+}
+close.onclick = function () {
+    modal.style.display = 'none';
+    location.reload();
+};
