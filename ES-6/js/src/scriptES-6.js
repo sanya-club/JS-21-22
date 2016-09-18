@@ -44,7 +44,7 @@ let modalTitle = document.querySelector('.modal-title');
 let modalText = document.querySelector('.modal-text');
 
 function test() {
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < (QA.length) * (question.answers.length); i++) {
         if (checkbox[i].checked) {
             yourAns.push(+checkbox[i].value);
         }
